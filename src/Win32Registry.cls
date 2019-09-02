@@ -46,7 +46,8 @@ Option Explicit
 ' vbAccelerator - free, advanced source code for VB programmers.
 '     http://vbaccelerator.com
 ' =========================================================
-
+' Site also Archived here: https://github.com/tannerhelland/vbAccelerator-Archive
+'
 'Registry Specific Access Rights
 Private Const KEY_QUERY_VALUE As Long = &H1
 Private Const KEY_SET_VALUE As Long = &H2
