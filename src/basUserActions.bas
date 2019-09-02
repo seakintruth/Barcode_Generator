@@ -17,63 +17,63 @@ Option Explicit
          'person’s official duties.
          '...
 
-Sub grpBoxTemplates_Click()
-SetEcho False
-If Len(gstrDataSheetName) = 0 Then
-    SetGlobalVariables
-End If
-Dim sht As Worksheet: Set sht = Worksheets(gstrDataSheetName)
-gLngOptionTemplateValue = sht.Range(gstrTemplateCellName).Value
-    Select Case gLngOptionTemplateValue
-        Case gOptAvery5167
-            gLngBarcodeWidth = 190
-            gLngBarcodeHeight = 45
-            gLngBarcodeFontSize = 1
-            gLngBarcodeResolution = 1
-            'mSetBarcodeAttributes sht
-            mHideCustomEntryColumns
-            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
-                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
-        Case gOptAvery5160
-            gLngBarcodeWidth = 250
-            gLngBarcodeHeight = 92
-            gLngBarcodeFontSize = 3
-            gLngBarcodeResolution = 1
-            'mSetBarcodeAttributes sht
-            mHideCustomEntryColumns
-            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
-                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
-        Case gOptAvery5360
-            gLngBarcodeWidth = 250
-            gLngBarcodeHeight = 92
-            gLngBarcodeFontSize = 3
-            gLngBarcodeResolution = 1
-            'mSetBarcodeAttributes sht
-            mHideCustomEntryColumns
-            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
-                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
-        Case gOptAvery5262
-            gLngBarcodeWidth = 250
-            gLngBarcodeHeight = 92
-            gLngBarcodeFontSize = 3
-            gLngBarcodeResolution = 1
-            'mSetBarcodeAttributes sht
-            mHideCustomEntryColumns
-            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
-                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
-        Case gOptCustom
-            'mGetBarcodeAttributes sht
-            '[TODO] Delete this if statement
-            If False Then
-                MsgBox _
-                    "" & _
-                    ""
-            End If
-            mShowCustomEntryColumns
-            'sht.Range(gstrTemplateCellName).Offset(0, 1).ClearContents
-    End Select
-SetEcho True
-End Sub
+'Sub grpBoxTemplates_Click()
+'SetEcho False
+'If Len(gstrDataSheetName) = 0 Then
+'    SetGlobalVariables
+'End If
+'Dim sht As Worksheet: Set sht = Worksheets(gstrDataSheetName)
+'gLngOptionTemplateValue = sht.Range(gstrTemplateCellName).Value
+'    Select Case gLngOptionTemplateValue
+'        Case gOptAvery5167
+'            gLngBarcodeWidth = 190
+'            gLngBarcodeHeight = 45
+'            gLngBarcodeFontSize = 1
+'            gLngBarcodeResolution = 1
+'            'mSetBarcodeAttributes sht
+'            mHideCustomEntryColumns
+'            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
+'                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
+'        Case gOptAvery5160
+'            gLngBarcodeWidth = 250
+'            gLngBarcodeHeight = 92
+'            gLngBarcodeFontSize = 3
+'            gLngBarcodeResolution = 1
+'            'mSetBarcodeAttributes sht
+'            mHideCustomEntryColumns
+'            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
+'                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
+'        Case gOptAvery5360
+'            gLngBarcodeWidth = 250
+'            gLngBarcodeHeight = 92
+'            gLngBarcodeFontSize = 3
+'            gLngBarcodeResolution = 1
+'            'mSetBarcodeAttributes sht
+'            mHideCustomEntryColumns
+'            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
+'                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
+'        Case gOptAvery5262
+'            gLngBarcodeWidth = 250
+'            gLngBarcodeHeight = 92
+'            gLngBarcodeFontSize = 3
+'            gLngBarcodeResolution = 1
+'            'mSetBarcodeAttributes sht
+'            mHideCustomEntryColumns
+'            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
+'                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
+'        Case gOptCustom
+'            'mGetBarcodeAttributes sht
+'            '[TODO] Delete this if statement
+'            If False Then
+'                MsgBox _
+'                    "" & _
+'                    ""
+'            End If
+'            mShowCustomEntryColumns
+'            'sht.Range(gstrTemplateCellName).Offset(0, 1).ClearContents
+'    End Select
+'SetEcho True
+'End Sub
 
 Sub grpBoxStyle_Click()
 SetEcho False

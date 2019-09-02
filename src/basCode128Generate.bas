@@ -49,7 +49,7 @@ For i = 1 To Fontlist.ListCount
         fFontFound = True
         GoTo ExitHere
     End If
-    If i > 500 Then Exit For
+    If i > 50000 Then Exit For
 Next i
 On Error GoTo 0
 ExitHere:
@@ -72,28 +72,31 @@ On Error GoTo HandleError
     End If
     Dim aryFonts As Variant
    aryFonts = mGetFontListAsArray()
-    If Not IsEmpty(aryFonts) Then
+    If Not IsEmpty(aryFonts(1, 1)) Then
         ' Paste the array of font names into column
         Dim rngFontList As Range
-        Set rngFontList = wsh.Range("E1:E" & UBound(aryFonts))
+        Set rngFontList = wsh.Range("E1:E" & UBound(aryFonts, 1))
         rngFontList.Value = aryFonts
         Set wsh = ThisWorkbook.Worksheets(gstrDataSheetName)
-        With wsh.Range(gstrFontNameCellName).Validation
-            .Delete
-            .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, Operator:= _
-                xlBetween, Formula1:="=" & gstrOptionsSheetName & "!$E$1:$E$" & (UBound(aryFonts) - 1)
-            .IgnoreBlank = True
-            .InCellDropdown = True
-            .InputTitle = ""
-            .ErrorTitle = "Enter a valid Font"
-            .InputMessage = ""
-            .ErrorMessage = _
-                "Selected font must be any currently installed font name"
-            .ShowInput = False
-            .ShowError = True
-        End With
+        Set rngFontList = GetNonBlankCellsFromRange(Application.Range(gstrOptionsSheetName & "!$E$1:$E$" & (UBound(aryFonts, 2) - 1)))
+        If Not rngFontList Is Nothing Then
+            With wsh.Range(gstrFontNameCellName).Validation
+                .Delete
+                .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, Operator:= _
+                    xlBetween, Formula1:="=" & gstrOptionsSheetName & "!" & rngFontList.Address
+                .IgnoreBlank = True
+                .InCellDropdown = True
+                .InputTitle = ""
+                .ErrorTitle = "Enter a valid Font"
+                .InputMessage = ""
+                .ErrorMessage = _
+                    "Selected font must be any currently installed font name"
+                .ShowInput = False
+                .ShowError = True
+            End With
+        End If
     End If
-     wsh.Activate
+'     wsh.Activate
 Exit Sub
 HandleError:
     Debug.Print "basCode128Generate::BuildFontList::", Err.Number, Err.Description
@@ -119,22 +122,27 @@ Dim i As Long
         Set Fontlist = Tempbar.Controls.Add(ID:=1728)
     End If
     Err.Clear: On Error GoTo HandleError
+    ReDim aryFonts(1 To 1, 1 To 1)
     If lngFontCount > 0 Then
         For i = 1 To lngFontCount
-        ReDim aryFonts(1 To i)
-            aryFonts(i) = Fontlist.List(i)
+        If Not IsEmpty(aryFonts(1, 1)) Then
+            ReDim Preserve aryFonts(1 To 1, 1 To i)
+        End If
+            aryFonts(1, i) = Fontlist.List(i)
         Next i
     End If
-    mGetFontListAsArray = aryFonts
     'Cleanup
     If Not Tempbar Is Nothing Then
         On Error Resume Next
         Tempbar.Delete
     End If
-Exit Function
+    If IsEmpty(aryFonts) Then
 AlternateMethod:
-    Debug.Print "Alternate method not yet implemented"
-    
+        aryFonts = mGetFontsListFromWord
+    End If
+    Dim aryTemp() As Variant
+    TransposeArray aryFonts, aryTemp
+    mGetFontListAsArray = aryTemp
 Exit Function
 HandleError:
     Debug.Print "basCode128Generate::mGetFontListAsArray::", Err.Number, Err.Description
@@ -143,8 +151,41 @@ HandleError:
             GoTo AlternateMethod
         Case 0, -2147467259
             DoEvents
-            
-            Resume
+            Resume Next
+        Case Else
+    End Select
+    Resume Next
+End Function
+
+'Modified from: https://stackoverflow.com/a/32081702
+Private Function mGetFontsListFromWord() As Variant
+On Error GoTo HandleError
+    Dim aryFontList As Variant
+    Dim wd As Object, fontID As Variant
+    Dim fOfficeApplicationOpen As Boolean
+    Set wd = GetOfficeApplication(oatcWord, fOfficeApplicationOpen)
+    ReDim aryFontList(1 To 1, 1 To 1)
+    For Each fontID In wd.FontNames
+        If Not IsEmpty(aryFontList(1, 1)) Then
+            ReDim Preserve aryFontList(1 To 1, 1 To UBound(aryFontList) + 1)
+        End If
+        aryFontList(1, UBound(aryFontList)) = fontID
+    Next
+    mGetFontsListFromWord = aryFontList
+'Cleanup
+    If Not fOfficeApplicationOpen Then
+        wd.Quit
+    End If
+    Set wd = Nothing
+Exit Function
+HandleError:
+    Debug.Print "basCode128Generate::GetFontsListFromWord::", Err.Number, Err.Description
+    DoEvents
+    Select Case Err.Number
+        Case 1004
+            Resume Next
+        Case 0, -2147467259
+            Resume Next
         Case Else
     End Select
     Resume Next

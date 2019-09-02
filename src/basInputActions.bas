@@ -24,9 +24,6 @@ Public Sub DropDown9_Change()
     Dim rngBarcode3Of9 As Range
     Set rngBarcode3Of9 = ThisWorkbook.Sheets(gstrOutputSheetName).Range(gstrBarcode3Of9)
 End Sub
-Public Sub Data_grpBoxTemplates_Click()
-    grpBoxTemplates_Click
-End Sub
 
 Public Function GetSelectedTemplateOption()
     'gSelectedTemplateNumber is only ever set after we use GetSelectedTemplateOption
