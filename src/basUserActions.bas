@@ -1,6 +1,6 @@
 Attribute VB_Name = "basUserActions"
 Option Explicit
-'Authored 2014-2019 by Jeremy Dean Gerdes <jeremy.gerdes@navy.mil>
+'Authored 2014-2017 by Jeremy Dean Gerdes <jeremy.gerdes@navy.mil>
     'Public Domain in the United States of America,
      'any international rights are waived through the CC0 1.0 Universal public domain dedication <https://creativecommons.org/publicdomain/zero/1.0/legalcode>
      'http://www.copyright.gov/title17/
@@ -17,63 +17,63 @@ Option Explicit
          'person’s official duties.
          '...
 
-'Sub grpBoxTemplates_Click()
-'SetEcho False
-'If Len(gstrDataSheetName) = 0 Then
-'    SetGlobalVariables
-'End If
-'Dim sht As Worksheet: Set sht = Worksheets(gstrDataSheetName)
-'gLngOptionTemplateValue = sht.Range(gstrTemplateCellName).Value
-'    Select Case gLngOptionTemplateValue
-'        Case gOptAvery5167
-'            gLngBarcodeWidth = 190
-'            gLngBarcodeHeight = 45
-'            gLngBarcodeFontSize = 1
-'            gLngBarcodeResolution = 1
-'            'mSetBarcodeAttributes sht
-'            mHideCustomEntryColumns
-'            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
-'                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
-'        Case gOptAvery5160
-'            gLngBarcodeWidth = 250
-'            gLngBarcodeHeight = 92
-'            gLngBarcodeFontSize = 3
-'            gLngBarcodeResolution = 1
-'            'mSetBarcodeAttributes sht
-'            mHideCustomEntryColumns
-'            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
-'                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
-'        Case gOptAvery5360
-'            gLngBarcodeWidth = 250
-'            gLngBarcodeHeight = 92
-'            gLngBarcodeFontSize = 3
-'            gLngBarcodeResolution = 1
-'            'mSetBarcodeAttributes sht
-'            mHideCustomEntryColumns
-'            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
-'                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
-'        Case gOptAvery5262
-'            gLngBarcodeWidth = 250
-'            gLngBarcodeHeight = 92
-'            gLngBarcodeFontSize = 3
-'            gLngBarcodeResolution = 1
-'            'mSetBarcodeAttributes sht
-'            mHideCustomEntryColumns
-'            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
-'                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
-'        Case gOptCustom
-'            'mGetBarcodeAttributes sht
-'            '[TODO] Delete this if statement
-'            If False Then
-'                MsgBox _
-'                    "" & _
-'                    ""
-'            End If
-'            mShowCustomEntryColumns
-'            'sht.Range(gstrTemplateCellName).Offset(0, 1).ClearContents
-'    End Select
-'SetEcho True
-'End Sub
+Sub grpBoxTemplates_Click()
+SetEcho False
+If Len(gstrDataSheetName) = 0 Then
+    SetGlobalVariables
+End If
+Dim sht As Worksheet: Set sht = Worksheets(gstrDataSheetName)
+gLngOptionTemplateValue = sht.Range(gstrTemplateCellName).Value
+    Select Case gLngOptionTemplateValue
+        Case gOptAvery5167
+            gLngBarcodeWidth = 190
+            gLngBarcodeHeight = 45
+            gLngBarcodeFontSize = 1
+            gLngBarcodeResolution = 1
+            mSetBarcodeAttributes sht
+            mHideCustomEntryColumns
+            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
+                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
+        Case gOptAvery5160
+            gLngBarcodeWidth = 250
+            gLngBarcodeHeight = 92
+            gLngBarcodeFontSize = 3
+            gLngBarcodeResolution = 1
+            mSetBarcodeAttributes sht
+            mHideCustomEntryColumns
+            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
+                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
+        Case gOptAvery5360
+            gLngBarcodeWidth = 250
+            gLngBarcodeHeight = 92
+            gLngBarcodeFontSize = 3
+            gLngBarcodeResolution = 1
+            mSetBarcodeAttributes sht
+            mHideCustomEntryColumns
+            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
+                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
+        Case gOptAvery5262
+            gLngBarcodeWidth = 250
+            gLngBarcodeHeight = 92
+            gLngBarcodeFontSize = 3
+            gLngBarcodeResolution = 1
+            mSetBarcodeAttributes sht
+            mHideCustomEntryColumns
+            sht.Range(gstrTemplateCellName).Offset(0, 1).Value _
+                = GetTemplateOption(sht.Range(gstrTemplateCellName).Value)
+        Case gOptCustom
+            mGetBarcodeAttributes sht
+            If sht.Range(gstrDestinationTypeCellName).Value = 3 Then
+                MsgBox _
+                    "Barcode template can not be 'Custom' and have a " & _
+                    "destination of 'Avery word Template'", vbOKOnly, "Barcode Generator"
+                sht.Range(gstrDestinationTypeCellName).Value = 2
+            End If
+            mShowCustomEntryColumns
+            sht.Range(gstrTemplateCellName).Offset(0, 1).ClearContents
+    End Select
+SetEcho True
+End Sub
 
 Sub grpBoxStyle_Click()
 SetEcho False
@@ -122,7 +122,9 @@ Sub btnGotoAdditionalOptions_Click()
     SetOriginalAppOptions
 End Sub
 
-Sub btnExportBarcodeToFile_Click() 'Generate Barcode File
+Sub btnExportBarcodeToFile_Click()
+'[TODO] Prior to re-implementing output to HTML, or Word templates, need to capture the barcode object as an image
+'Generate Barcode File
 SetEcho False
 ''''''''''''''''''''''''''''''''''''''''''''
 'inputs validation should be added here
@@ -176,7 +178,8 @@ SetEcho False
                     "<html><head><title> Template Generated Barcodes from Barcodesinc " & _
                     "by Gerdes, Jeremy D.</title></head><body>"
                 For Each c In rngData
-                    tf.WriteLine GetBarcodeImageUrl(c.Value)
+                    'tf.WriteLine GetBarcodeImageUrl(c.Value)
+                    '[TODO] Prior to re-implementing output to HTML, or Word templates, need to capture the barcode object as an image
                 Next
                 tf.WriteLine "</body></html>"
                 tf.Close

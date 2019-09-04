@@ -1,195 +1,12 @@
 Attribute VB_Name = "basCode128Generate"
 Option Explicit
-'Authored 2014-2019 by Jeremy Dean Gerdes <jeremy.gerdes@navy.mil>
-    'Public Domain in the United States of America,
-     'any international rights are waived through the CC0 1.0 Universal public domain dedication <https://creativecommons.org/publicdomain/zero/1.0/legalcode>
-     'http://www.copyright.gov/title17/
-     'In accrordance with 17 U.S.C. § 105 This work is 'noncopyright' or in the 'public domain'
-         'Subject matter of copyright: United States Government works
-         'protection under this title is not available for
-         'any work of the United States Government, but the United States
-         'Government is not precluded from receiving and holding copyrights
-         'transferred to it by assignment, bequest, or otherwise.
-     'as defined by 17 U.S.C § 101
-         '...
-         'A “work of the United States Government” is a work prepared by an
-         'officer or employee of the United States Government as part of that
-         'person’s official duties.
-         '...
+'=============================================================================================
+'From https://www.mrexcel.com/forum/excel-questions/970865-excel-vba-barcode-generator.html#post4659015
+'=============================================================================================
 Type BarParams
     Pos As Long
     Width As Byte
 End Type
-
-Public Function GetInchesToPoint(dblInches As Double) As Double
-    GetInchesToPoint = Application.InchesToPoints(dblInches)
-End Function
-
-Public Function GetPointsToInches(dblPoints As Double) As Double
-    GetPointsToInches = dblPoints / Application.InchesToPoints(1)
-End Function
-
-Public Function GetPointsToCm(dblPoints As Double) As Double
-    GetPointsToCm = dblPoints / Application.CentimetersToPoints(1)
-End Function
-
-Public Function GetCmToPoint(dblPoints As Double) As Double
-    GetCmToPoint = Application.CentimetersToPoints(dblPoints)
-End Function
-
-Public Function IsValidFontName(strName As String) As Boolean
-Dim fFontFound As Boolean: fFontFound = False
-Dim Fontlist As Variant
-Dim i As Long
-
-Set Fontlist = Application.CommandBars("Formatting").FindControl(ID:=1728)
-On Error Resume Next
-For i = 1 To Fontlist.ListCount
-    If InStrRev(Fontlist.List(i), strName) > 0 Then
-        fFontFound = True
-        GoTo ExitHere
-    End If
-    If i > 50000 Then Exit For
-Next i
-On Error GoTo 0
-ExitHere:
-    IsValidFontName = fFontFound
-End Function
-
-Public Sub BuildFontList()
-On Error GoTo HandleError
-    If Len(gstrOutputSheetName) = 0 Then
-        SetGlobalVariables
-    End If
-    Dim rngFont As Range
-    Dim wsh As Worksheet
-    Set wsh = ThisWorkbook.Worksheets(gstrOptionsSheetName)
-    Set rngFont = wsh.Range("E1")
-    Dim rngClear As Range
-    Set rngClear = Intersect(wsh.Columns(5), GetNonBlankCellsFromWorksheet(wsh))
-    If Not rngClear Is Nothing Then
-        rngClear.Clear
-    End If
-    Dim aryFonts As Variant
-   aryFonts = mGetFontListAsArray()
-    If Not IsEmpty(aryFonts(1, 1)) Then
-        ' Paste the array of font names into column
-        Dim rngFontList As Range
-        Set rngFontList = wsh.Range("E1:E" & UBound(aryFonts, 1))
-        rngFontList.Value = aryFonts
-        Set wsh = ThisWorkbook.Worksheets(gstrDataSheetName)
-        Set rngFontList = GetNonBlankCellsFromRange(Application.Range(gstrOptionsSheetName & "!$E$1:$E$" & (UBound(aryFonts, 2) - 1)))
-        If Not rngFontList Is Nothing Then
-            With wsh.Range(gstrFontNameCellName).Validation
-                .Delete
-                .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, Operator:= _
-                    xlBetween, Formula1:="=" & gstrOptionsSheetName & "!" & rngFontList.Address
-                .IgnoreBlank = True
-                .InCellDropdown = True
-                .InputTitle = ""
-                .ErrorTitle = "Enter a valid Font"
-                .InputMessage = ""
-                .ErrorMessage = _
-                    "Selected font must be any currently installed font name"
-                .ShowInput = False
-                .ShowError = True
-            End With
-        End If
-    End If
-'     wsh.Activate
-Exit Sub
-HandleError:
-    Debug.Print "basCode128Generate::BuildFontList::", Err.Number, Err.Description
-    Resume Next
-End Sub
-
-Private Function mGetFontListAsArray() As Variant
-' ----------------------------------------------------------------------------------
-' https://social.msdn.microsoft.com/Forums/exchange/en-US/61b3e4f3-069c-4c42-b0b0-ae09fe15d82a/fonts-by-number?forum=isvvba
-' ----------------------------------------------------------------------------------
-On Error GoTo HandleError
-Dim aryFonts As Variant
-Dim Fontlist As CommandBarControl
-Dim Tempbar As CommandBar
-Dim i As Long
-    ' This method usually works, but is sometimes unreliable, it's assumed to be the fastest, but that's not yet been tested.
-    Set Fontlist = Application.CommandBars("Formatting").FindControl(ID:=1728)
-    Dim lngFontCount As Long
-    On Error Resume Next
-    lngFontCount = Fontlist.ListCount
-    If Fontlist Is Nothing Or Err.Number <> 0 Then
-        Set Tempbar = Application.CommandBars.Add
-        Set Fontlist = Tempbar.Controls.Add(ID:=1728)
-    End If
-    Err.Clear: On Error GoTo HandleError
-    ReDim aryFonts(1 To 1, 1 To 1)
-    If lngFontCount > 0 Then
-        For i = 1 To lngFontCount
-        If Not IsEmpty(aryFonts(1, 1)) Then
-            ReDim Preserve aryFonts(1 To 1, 1 To i)
-        End If
-            aryFonts(1, i) = Fontlist.List(i)
-        Next i
-    End If
-    'Cleanup
-    If Not Tempbar Is Nothing Then
-        On Error Resume Next
-        Tempbar.Delete
-    End If
-    If IsEmpty(aryFonts) Then
-AlternateMethod:
-        aryFonts = mGetFontsListFromWord
-    End If
-    Dim aryTemp() As Variant
-    TransposeArray aryFonts, aryTemp
-    mGetFontListAsArray = aryTemp
-Exit Function
-HandleError:
-    Debug.Print "basCode128Generate::mGetFontListAsArray::", Err.Number, Err.Description
-    Select Case Err.Number
-        Case 1004
-            GoTo AlternateMethod
-        Case 0, -2147467259
-            DoEvents
-            Resume Next
-        Case Else
-    End Select
-    Resume Next
-End Function
-
-'Modified from: https://stackoverflow.com/a/32081702
-Private Function mGetFontsListFromWord() As Variant
-On Error GoTo HandleError
-    Dim aryFontList As Variant
-    Dim wd As Object, fontID As Variant
-    Dim fOfficeApplicationOpen As Boolean
-    Set wd = GetOfficeApplication(oatcWord, fOfficeApplicationOpen)
-    ReDim aryFontList(1 To 1, 1 To 1)
-    For Each fontID In wd.FontNames
-        If Not IsEmpty(aryFontList(1, 1)) Then
-            ReDim Preserve aryFontList(1 To 1, 1 To UBound(aryFontList) + 1)
-        End If
-        aryFontList(1, UBound(aryFontList)) = fontID
-    Next
-    mGetFontsListFromWord = aryFontList
-'Cleanup
-    If Not fOfficeApplicationOpen Then
-        wd.Quit
-    End If
-    Set wd = Nothing
-Exit Function
-HandleError:
-    Debug.Print "basCode128Generate::GetFontsListFromWord::", Err.Number, Err.Description
-    DoEvents
-    Select Case Err.Number
-        Case 1004
-            Resume Next
-        Case 0, -2147467259
-            Resume Next
-        Case Else
-    End Select
-    Resume Next
-End Function
 
 Public Sub GenerateBarcodesFromInput() 'Worksheet Input
     SetEcho False
@@ -220,7 +37,7 @@ Public Sub GenerateBarcodesFromInput() 'Worksheet Input
         Dim sglBottomPadding As Single: sglBottomPadding = shtData.Range(gstrBottomPaddingImageCellName).Value
         Dim sglFontSize As Single: sglFontSize = shtData.Range(gstrFontSizeCellName).Value
         Dim sglBarcodeHeight As Single: sglBarcodeHeight = shtData.Range(gstrHeightCellName).Value
-        Dim sglBarcodeWidth As Single: sglBarcodeWidth = shtData.Range(gstrWidthScaleCellName).Value
+        Dim sglBarcodeWidthScale As Single: sglBarcodeWidthScale = shtData.Range(gstrWidthScaleCellName).Value
         Dim sglMaxColumn As Single: sglMaxColumn = shtData.Range(gstrColumnsOfBarcodes).Value
         Dim intSymbology As Integer: intSymbology = shtData.Range(gstrSymbologyCellName).Value
         Dim sglTextPosition As Single: sglTextPosition = shtData.Range(gstrTextPositionCellName).Value
@@ -247,7 +64,7 @@ Public Sub GenerateBarcodesFromInput() 'Worksheet Input
                         intBarcodeTop = sglTopPadding
                     End If
                 Else ' (not first column)
-                    sglBarcodeLeft = sglBarcodeLeft + sglRightPadding + sglLeftPadding + sglBarcodeWidth  ' this is the previous shape's width
+                    sglBarcodeLeft = sglBarcodeLeft + sglRightPadding + sglLeftPadding + shp.Width ' this is the previous shape's width
                 End If
             End If
             Select Case intSymbology
@@ -266,7 +83,7 @@ Public Sub GenerateBarcodesFromInput() 'Worksheet Input
                 sglBarcodeHeight, _
                 30, _
                 shtOutput)
-                shp.ScaleWidth sglBarcodeWidth / shp.Width, msoFalse, msoScaleFromTopLeft
+            shp.ScaleWidth sglBarcodeWidthScale, msoFalse, msoScaleFromTopLeft
             If sglFontSize > 0 Then
                 '-------------------------------------------------------------------
                 'Place the string below and centered to the group...
@@ -328,9 +145,7 @@ Public Function DrawBarcode( _
     Optional Color As Long, _
     Optional TargetSheet As Worksheet _
 ) As Shape
-'=============================================================================================
-' Highly modified from https://www.mrexcel.com/forum/excel-questions/970865-excel-vba-barcode-generator.html#post4659015
-'=============================================================================================
+
 If TargetSheet Is Nothing Then
     Set TargetSheet = ThisWorkbook.ActiveSheet
 End If

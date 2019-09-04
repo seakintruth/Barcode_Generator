@@ -40,16 +40,10 @@ Public Sub ActionForWorkbook_Open()
     gstrDataSheetName = "Input"
     SetGlobalVariables
     Dim sht As Worksheet
-    BuildFontList
-    Dim rngSelectedFont As Range
-    Set rngSelectedFont = ThisWorkbook.Sheets(gstrDataSheetName).Range(gstrFontNameCellName)
-    If Not IsValidFontName(rngSelectedFont.Value) Then
-            rngSelectedFont.Value = vbNullString
-    End If
-    Set sht = ThisWorkbook.Sheets(gstrOptionsSheetName): sht.Visible = xlSheetVeryHidden
-    Set sht = ThisWorkbook.Sheets(gstrNoticeSheetName): sht.Visible = xlSheetVeryHidden
     Set sht = ThisWorkbook.Sheets(gstrDataSheetName): sht.Visible = xlSheetVisible
     sht.Activate
+    Set sht = ThisWorkbook.Sheets(gstrOptionsSheetName): sht.Visible = xlSheetVeryHidden
+    Set sht = ThisWorkbook.Sheets(gstrNoticeSheetName): sht.Visible = xlSheetVeryHidden
     SetOriginalAppOptions
 End Sub
 

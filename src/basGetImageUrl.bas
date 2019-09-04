@@ -1,6 +1,6 @@
 Attribute VB_Name = "basGetImageUrl"
 Option Explicit
-'Authored 2014-2019 by Jeremy Dean Gerdes <jeremy.gerdes@navy.mil>
+'Authored 2014-2017 by Jeremy Dean Gerdes <jeremy.gerdes@navy.mil>
     'Public Domain in the United States of America,
      'any international rights are waived through the CC0 1.0 Universal public domain dedication <https://creativecommons.org/publicdomain/zero/1.0/legalcode>
      'http://www.copyright.gov/title17/
@@ -18,32 +18,32 @@ Option Explicit
          '...
 
 
-Public Function GetBarcodeImageUrl(strValue As Variant)
-    If Len(strValue) <> 0 Then
-        Dim sht As Worksheet
-        Set sht = ThisWorkbook.Sheets(gstrDataSheetName)
-        Select Case True
-            Case gOptAvery5160 = gLngOptionTemplateValue
-                GetBarcodeImageUrl = mGetBarcodeImageFromSheet(strValue, sht)
-            Case gOptAvery5167 = gLngOptionTemplateValue
-                GetBarcodeImageUrl = mGetBarcodeImageFromSheet(strValue, sht)
-            Case gOptCustom = gLngOptionTemplateValue
-                GetBarcodeImageUrl = mGetBarcodeImageFromSheet(strValue, sht)
-            Case Else
-'                GetBarcodeImageUrl = mGetBarcodeImageUrl( _
-'                    strValue, _
-'                    , _
-'                    , _
-'                    , _
-'                    glngStyleValue, _
-'                    gstrType, _
-'                    gLngBarcodeResolution _
-'                )
-        End Select
-    End If
-End Function
+'Public Function GetBarcodeImageUrl(strValue As Variant)
+'    If Len(strValue) <> 0 Then
+'        Dim sht As Worksheet
+'        Set sht = ThisWorkbook.Sheets(gstrDataSheetName)
+'        Select Case True
+'            Case gOptAvery5160 = gLngOptionTemplateValue
+'                'GetBarcodeImageUrl = mGetBarcodeImageFromSheet(strValue, sht)
+'            Case gOptAvery5167 = gLngOptionTemplateValue
+'                'GetBarcodeImageUrl = mGetBarcodeImageFromSheet(strValue, sht)
+'            Case gOptCustom = gLngOptionTemplateValue
+'                'GetBarcodeImageUrl = mGetBarcodeImageFromSheet(strValue, sht)
+'            Case Else
+''                GetBarcodeImageUrl = mGetBarcodeImageUrl( _
+''                    strValue, _
+''                    , _
+''                    , _
+''                    , _
+''                    glngStyleValue, _
+''                    gstrType, _
+''                    gLngBarcodeResolution _
+''                )
+'        End Select
+'    End If
+'End Function
 
-Private Function mGetBarcodeImageFromSheet(strValue As Variant, sht As Worksheet)
+'Private Function mGetBarcodeImageFromSheet(strValue As Variant, sht As Worksheet)
 '         mGetBarcodeImageFromSheet = _
 '            mGetBarcodeImageUrl( _
 '                strValue, _
@@ -54,7 +54,7 @@ Private Function mGetBarcodeImageFromSheet(strValue As Variant, sht As Worksheet
 '                gstrType, _
 '                gLngBarcodeResolution _
 '            )
-End Function
+'End Function
 
 'Private Function mGetBarcodeImageUrl(strValue As Variant, _
 '    Optional lngWidth As Long = 190, _

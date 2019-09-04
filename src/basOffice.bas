@@ -1,6 +1,6 @@
 Attribute VB_Name = "basOffice"
 Option Explicit
-'Authored 2014-2019 by Jeremy Dean Gerdes <jeremy.gerdes@navy.mil>
+'Authored 2014-2017 by Jeremy Dean Gerdes <jeremy.gerdes@navy.mil>
     'Public Domain in the United States of America,
      'any international rights are waived through the CC0 1.0 Universal public domain dedication <https://creativecommons.org/publicdomain/zero/1.0/legalcode>
      'http://www.copyright.gov/title17/
@@ -109,66 +109,6 @@ Public Function GetExcelWkbOpenAsObject(strPath As String) As Object
             objApplication.Activate
             Set GetExcelWkbOpenAsObject = wkb
             
-End Function
-
-Public Function GetOfficeApplicationVersion(ByRef oatOfficeApplictionType As oatcOfficeApplictionType) As avcOfficeApplictionVersion
-
-Dim reg As Win32Registry
-Dim strClass As String
-Dim strVersion As String
-
-    ' Functions determines office application version installed on machine.
-    ' If multiple versions of a given product are installed this procedure
-    ' will return the version of the active product.
-
-    ' Get office application class
-    strClass = GetOfficeApplicationClass(oatOfficeApplictionType)
-
-    ' Get office application version string from registry using class
-    Set reg = New Win32Registry
-    With reg
-        ' Check HKEY_LOCAL_MACHINE\Software\Classes\" & strClass & "\CurVer
-        .ClassKey = HKEY_LOCAL_MACHINE
-        .ValueType = REG_SZ
-        .SectionKey = "Software\Classes\" & strClass & "\CurVer"
-        .ValueKey = vbNullString
-        If .KeyExists Then _
-            strVersion = IIf(IsNull(.Value), vbNullString, .Value)
-        ' Check HKEY_CLASSES_ROOT\Software\Classes\" & strClass & "\CurVer if needed
-        If LenB(strVersion) = 0 Then
-            .ClassKey = HKEY_CLASSES_ROOT
-            .ValueType = REG_SZ
-            .SectionKey = "Software\Classes\" & strClass & "\CurVer"
-            .ValueKey = vbNullString
-            If .KeyExists Then _
-                strVersion = Nz(.Value, vbNullString)
-        End If
-    End With
-    ' Clean up
-    Set reg = Nothing
-
-    ' Convert office application string to avcOfficeApplictionVersion enum
-    If LenB(strVersion) <> 0 Then
-        strVersion = Right$(strVersion, Len(strVersion) - InStrRev(strVersion, ".", -1, vbBinaryCompare))
-        Select Case strVersion
-            Case "7"
-                GetOfficeApplicationVersion = oavc95
-            Case "8"
-                GetOfficeApplicationVersion = oavc97
-            Case "9"
-                GetOfficeApplicationVersion = oavc2000
-            Case "10"
-                GetOfficeApplicationVersion = oavc2002
-            Case "11"
-                GetOfficeApplicationVersion = oavc2003
-            Case "12"
-                GetOfficeApplicationVersion = oavc2007
-            Case "14"
-                GetOfficeApplicationVersion = oavc2010
-            'Add Office2013
-        End Select
-    End If
-
 End Function
 
 Public Function Nz(ByVal var As Variant, Optional ByVal strAlt As String) As Variant
@@ -712,10 +652,27 @@ Dim strFilter As String
 
     ' Get template file path
     If LenB(strTemplateFilePath) = 0 Then
-        strFilter = "Word Template (*.dot; *.dotx; *.dotm; *.doc; *.docx; *.docm)" & vbNullChar & "*.dot;*.dotx;*.dotm;*.doc;*.docx;*.docm" & vbNullChar
-        strFilter = strFilter & "All Files (*.*)" & vbNullChar & "*.*" & vbNullChar
-        strFilter = strFilter & vbNullChar & vbNullChar
-        strTemplateFilePath = FileDialog(strFilter:=strFilter, strDialogTitle:="Select Word Template")
+        strTemplateFilePath = ThisWorkbook.path & "\" & "Templates"
+        Dim FSO As Object: Set FSO = CreateObject("Scripting.FileSystemObject")
+        Dim fil As Object
+        Dim intFileNumber
+        Dim strFileList As String
+        If FolderExists(strTemplateFilePath) Then
+            For Each fil In FSO.GetFolder(strTemplateFilePath).Files
+                intFileNumber = intFileNumber + 1
+                strFileList = strFileList & intFileNumber & " - " & fil.Name & vbCrLf
+            Next fil
+            Dim strFileListResponce As String
+            Do
+                strFileListResponce = InputBox("Enter the templates Number from this file list: " & vbCrLf & strFileList, "Select Template")
+            Loop Until IsNumeric(strFileListResponce)
+        Else
+            'If it's not found we could ask the user for the folder location
+            'strFilter = "Word Template (*.dot; *.dotx; *.dotm; *.doc; *.docx; *.docm)" & vbNullChar & "*.dot;*.dotx;*.dotm;*.doc;*.docx;*.docm" & vbNullChar
+            'strFilter = strFilter & "All Files (*.*)" & vbNullChar & "*.*" & vbNullChar
+            'strFilter = strFilter & vbNullChar & vbNullChar
+            'strTemplateFilePath = FileDialog(strFilter:=strFilter, strDialogTitle:="Select Word Template")
+        End If
     End If
 
     If LenB(strTemplateFilePath) <> 0 Then

@@ -1,6 +1,6 @@
 Attribute VB_Name = "basWordAppDoc"
 Option Explicit
-'Authored 2014-2019 by Jeremy Dean Gerdes <jeremy.gerdes@navy.mil>
+'Authored 2014-2017 by Jeremy Dean Gerdes <jeremy.gerdes@navy.mil>
     'Public Domain in the United States of America,
      'any international rights are waived through the CC0 1.0 Universal public domain dedication <https://creativecommons.org/publicdomain/zero/1.0/legalcode>
      'http://www.copyright.gov/title17/
@@ -31,6 +31,7 @@ Public Sub ExportToWordDocument( _
         Optional ByVal strFilePath As String, _
         Optional ByVal lngCellsPerPage As Long _
 )
+'[TODO] Prior to re-implementing output to HTML, or Word templates, need to capture the barcode object as an image
 'We use Late binding for every word object so that we don't have to attach a referance to 'Microsoft Word xx.0 Object Library'
 Dim wrd As Object
 Dim docTemplate As Object
@@ -96,7 +97,7 @@ Dim docTemplate As Object
         For Each c In rngData.Cells 'Excel Barcode data
             DoEvents
             Dim strImageDownloadFile As String
-            strImageDownloadFile = DownloadUriFileToTemp(GetBarcodeImageUrl(c.Value), "png")
+            'strImageDownloadFile = DownloadUriFileToTemp(GetBarcodeImageUrl(c.Value), "png")
             If FileExists(strImageDownloadFile) Then
                 lngBarcodeItem = c.Row + lngStartCell - 1
                 Application.StatusBar = "Building Barcode " & lngBarcodeItem & " of " & lngLastBarcodeRow
@@ -127,7 +128,7 @@ Dim docTemplate As Object
         'Dump barcode images to the file
         Dim img As Object
         For Each c In rngData
-            mInsertUrlGraphicInline GetBarcodeImageUrl(c.Value), docTemplate.StoryRanges(cwdMainTextStory).Characters.Last
+            'mInsertUrlGraphicInline GetBarcodeImageUrl(c.Value), docTemplate.StoryRanges(cwdMainTextStory).Characters.Last
             'Add some static space after each image...
             Dim gintSpacesAfterBarcode As Integer
             gintSpacesAfterBarcode = 5

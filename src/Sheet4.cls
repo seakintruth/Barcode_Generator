@@ -9,29 +9,6 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = True
 Option Explicit
 
-Private mFontUpdating As Boolean
-
 Private Sub Worksheet_Activate()
     ActionForWorkbook_Open
-End Sub
-
-Private Sub Worksheet_Change(ByVal Target As Range)
-    If Not mFontUpdating Then
-        If Len(gstrFontNameCellName) > 0 Then
-            Dim rngFont As Range: Set rngFont = Target.Parent.Range(gstrFontNameCellName)
-            Dim rngFontSize As Range: Set rngFontSize = Target.Parent.Range(gstrFontSizeCellName)
-            Select Case Target.Address
-                Case rngFont.Address
-                    mFontUpdating = True
-                    If IsValidFontName(rngFont.Value) Then
-                        Union(rngFont, GetNonBlankCellsFromRange(Target.Parent.Columns(1))).Font.Name = rngFont.Value
-                    End If
-                    mFontUpdating = False
-                Case rngFontSize.Address
-                    mFontUpdating = True
-                    GetNonBlankCellsFromRange(Target.Parent.Columns(1)).Font.Size = Target.Parent.Range(gstrFontSizeCellName).Value
-                    mFontUpdating = False
-            End Select
-        End If
-    End If
 End Sub

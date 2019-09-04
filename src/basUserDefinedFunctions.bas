@@ -1,6 +1,6 @@
 Attribute VB_Name = "basUserDefinedFunctions"
 Option Explicit
-'Authored 2014-2019 by Jeremy Dean Gerdes <jeremy.gerdes@navy.mil>
+'Authored 2014-2017 by Jeremy Dean Gerdes <jeremy.gerdes@navy.mil>
     'Public Domain in the United States of America,
      'any international rights are waived through the CC0 1.0 Universal public domain dedication <https://creativecommons.org/publicdomain/zero/1.0/legalcode>
      'http://www.copyright.gov/title17/
@@ -16,7 +16,24 @@ Option Explicit
          'officer or employee of the United States Government as part of that
          'person’s official duties.
          '...
-        
+         
+Public Function GetTemplateOption(lngOptionValue As Long) As String
+Application.Volatile (True)
+    gLngOptionTemplateValue = lngOptionValue
+    Select Case lngOptionValue
+        Case gOptAvery5167
+            GetTemplateOption = gstrOptionAvery5167Name
+        Case gOptAvery5160
+            GetTemplateOption = gstrOptionAvery5160Name
+        Case gOptCustom
+            GetTemplateOption = gstrOptionCustomName
+        Case gOptAvery5262
+            GetTemplateOption = gstrOptionAvery5262Name
+        Case gOptAvery5360
+            GetTemplateOption = gstrOptionAvery5360Name
+    End Select
+End Function
+
 Public Function GetStyleOption(lngOptionValue As Long) As String
 Application.Volatile (True)
     gLngOptionStyleValue = lngOptionValue

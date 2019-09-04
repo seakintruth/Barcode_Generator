@@ -1,6 +1,6 @@
 Attribute VB_Name = "basRange"
 Option Explicit
-'Authored 2014-2019 by Jeremy Dean Gerdes <jeremy.gerdes@navy.mil>
+'Authored 2014-2017 by Jeremy Dean Gerdes <jeremy.gerdes@navy.mil>
     'Public Domain in the United States of America,
      'any international rights are waived through the CC0 1.0 Universal public domain dedication <https://creativecommons.org/publicdomain/zero/1.0/legalcode>
      'http://www.copyright.gov/title17/
@@ -251,9 +251,8 @@ Dim rngConstants As Range
 Dim rngFormulas As Range
 
     Set wsh = rng.Parent
-'    wsh.Visible = xlSheetVisible
-'    wsh.Activate
-'    wsh.Select
+    wsh.Activate
+    wsh.Select
     Set rngUsedCells = wsh.UsedRange
     
     ' Get a range containing all formulas or constants

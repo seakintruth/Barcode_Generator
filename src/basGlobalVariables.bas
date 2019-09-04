@@ -1,6 +1,6 @@
 Attribute VB_Name = "basGlobalVariables"
 Option Explicit
-'Authored 2014-2019 by Jeremy Dean Gerdes <jeremy.gerdes@navy.mil>
+'Authored 2014-2017 by Jeremy Dean Gerdes <jeremy.gerdes@navy.mil>
     'Public Domain in the United States of America,
      'any international rights are waived through the CC0 1.0 Universal public domain dedication <https://creativecommons.org/publicdomain/zero/1.0/legalcode>
      'http://www.copyright.gov/title17/
@@ -29,9 +29,7 @@ Public gstrDataSheetName As String
 Public gstrOutputSheetName As String
 Public gstrCustomRangeColumns  As String
 Public gstrTextBoxHeightCellName As String
-
 'Fixed Cells
-Public gstrBarcode3Of9 As String
 Public gstrTemplateCellName  As String
 'Public gstrStyleCellName As String
 'Public gstrTypeCellName  As String
@@ -80,14 +78,12 @@ Public glngStyleValue As Long
 'Public gstrType As String
 
 Public Enum gOptTemplate
-    gOptAvery5167 = 0
-    gOptAvery5160 = 1
-    gOptAvery5360 = 2
-    gOptAvery5262 = 3
-    gOptCustom = 4
+    gOptAvery5167 = 1
+    gOptAvery5160 = 2
+    gOptCustom = 3
+    gOptAvery5360 = 4
+    gOptAvery5262 = 5
 End Enum
-
-Public gSelectedTemplateNumber As Integer
 
 Public Enum gOptDestinationType
     gOptBlankWordDoc = 1
@@ -125,7 +121,6 @@ Dim sht As Worksheet: Set sht = ThisWorkbook.Sheets("StaticValues")
 Dim rngSource As Range: Set rngSource = Intersect(sht.Columns(3), sht.UsedRange)
 
     '[Ranges]
-    GetStaticValue "gstrBarcode3Of9", gstrBarcode3Of9, rngSource
     GetStaticValue "gstrOutputSheetName", gstrOutputSheetName, rngSource
     GetStaticValue "gstrDataSheetName", gstrDataSheetName, rngSource
     GetStaticValue "gstrTemplateCellName", gstrTemplateCellName, rngSource
